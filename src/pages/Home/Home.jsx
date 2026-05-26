@@ -36,7 +36,7 @@ export default function Home() {
       <div style={{ marginBottom: 24 }}>
         <p style={{ fontWeight: 600, marginBottom: 8 }}>Section</p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {['mixed', 'vocabulaire', 'grammaire'].map(s => (
+          {['mixed', 'vocabulaire', 'grammaire', 'lecture'].map(s => (
             <button key={s} style={btn(settings.section === s)}
               onClick={() => setSettings(p => ({ ...p, section: s }))}>
               {s.charAt(0).toUpperCase() + s.slice(1)}
