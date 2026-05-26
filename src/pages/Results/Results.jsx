@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useHistory } from '../../hooks/useHistory'
 
 function ReviewItem({ item, index }) {
   const [open, setOpen] = useState(false)
@@ -23,7 +24,6 @@ function ReviewItem({ item, index }) {
         </span>
         <span style={{ fontSize: 12, color: '#888' }}>{open ? '▲' : '▼'}</span>
       </div>
-
       {open && (
         <div style={{ padding: '12px 16px', background: '#fff', fontSize: 14 }}>
           <p style={{ margin: '0 0 4px' }}>
@@ -48,8 +48,23 @@ function ReviewItem({ item, index }) {
 export default function Results() {
   const { state } = useLocation()
   const navigate = useNavigate()
+  const { addRecord } = useHistory()
+  const saved = useRef(false)
+
   const { score, total, expired, answers } = state || { score: 0, total: 0, expired: false, answers: [] }
   const pct = total > 0 ? Math.round((score / total) * 100) : 0
+
+  useEffect(() => {
+    if (saved.current || !state) return
+    saved.current = true
+    addRecord({
+      date: new Date().toISOString(),
+      score, total, pct,
+      section: 'mixed',
+      level: 'B1',
+      expired,
+    })
+  }, [])
 
   return (
     <div style={{ maxWidth: 600, margin: '60px auto', padding: '0 20px' }}>
@@ -59,16 +74,28 @@ export default function Results() {
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
         <h1 style={{ fontSize: 48, margin: '0 0 8px' }}>{score} / {total}</h1>
         <p style={{ fontSize: 24, color: '#555', margin: '0 0 24px' }}>{pct}% correct</p>
-        <button
-          onClick={() => navigate('/practice')}
-          style={{
-            padding: '12px 32px', fontSize: 16,
-            background: '#4caf50', color: '#fff',
-            border: 'none', borderRadius: 8, cursor: 'pointer',
-          }}
-        >
-          Practice Again
-        </button>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+          <button
+            onClick={() => navigate('/practice')}
+            style={{
+              padding: '12px 24px', fontSize: 16,
+              background: '#4caf50', color: '#fff',
+              border: 'none', borderRadius: 8, cursor: 'pointer',
+            }}
+          >
+            Practice Again
+          </button>
+          <button
+            onClick={() => navigate('/history')}
+            style={{
+              padding: '12px 24px', fontSize: 16,
+              background: '#fff', color: '#333',
+              border: '1px solid #ccc', borderRadius: 8, cursor: 'pointer',
+            }}
+          >
+            History
+          </button>
+        </div>
       </div>
 
       {answers && answers.length > 0 && (
