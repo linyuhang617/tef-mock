@@ -1,27 +1,34 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { questions } from '../../data/questions'
+import { useTimer } from '../../hooks/useTimer'
 
 export default function Practice() {
   const navigate = useNavigate()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selected, setSelected] = useState(null)
   const [score, setScore] = useState(0)
+  const [expired, setExpired] = useState(false)
 
   const question = questions[currentIndex]
   const total = questions.length
   const answered = selected !== null
   const isLast = currentIndex === total - 1
 
+  const { timeLeft, display } = useTimer(600, () => {
+    setExpired(true)
+    navigate('/results', { state: { score, total, expired: true } })
+  })
+
   function handleSelect(index) {
-    if (selected !== null) return
+    if (selected !== null || expired) return
     setSelected(index)
     if (index === question.answer) setScore(s => s + 1)
   }
 
   function handleNext() {
     if (isLast) {
-      navigate('/results', { state: { score, total } })
+      navigate('/results', { state: { score, total, expired: false } })
     } else {
       setCurrentIndex(i => i + 1)
       setSelected(null)
@@ -30,7 +37,18 @@ export default function Practice() {
 
   return (
     <div style={{ maxWidth: 600, margin: '60px auto', padding: '0 20px' }}>
-      <p style={{ color: '#888', marginBottom: 8 }}>Question {currentIndex + 1} / {total}</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <p style={{ color: '#888', margin: 0 }}>Question {currentIndex + 1} / {total}</p>
+        <p style={{
+          margin: 0,
+          fontWeight: 'bold',
+          color: timeLeft <= 60 ? '#f44336' : '#333',
+          fontSize: 18,
+        }}>
+          ⏱ {display}
+        </p>
+      </div>
+
       <div style={{ height: 6, background: '#eee', borderRadius: 3, marginBottom: 24 }}>
         <div style={{
           height: '100%',
