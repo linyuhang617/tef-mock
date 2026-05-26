@@ -1,16 +1,26 @@
-# React + Vite
+# TEF Practice
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Prepare for your French language exam (TEF/TCF/DELF) with interactive practice questions.
 
-Currently, two official plugins are available:
+**Live Demo**: http://e7mnfj9nlr7oe2ndot66zkir.46.225.149.31.sslip.io
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
+- Vocabulaire, Grammaire practice questions
+- Multiple choice with instant correct/incorrect feedback
+- Countdown timer (10 minutes)
+- Detailed results with answer review
+- Filter by section and difficulty level
 
-## React Compiler
+## Tech Stack
+React 18 · React Router v6 · Vite · CSS Modules · Deployed on Hetzner VPS via Coolify
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Run Locally
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Roadmap
+- Listening comprehension (audio-based questions)
+- German Goethe B1 question bank
+- Practice history with localStorage
