@@ -8,6 +8,7 @@ export default function Practice() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selected, setSelected] = useState(null)
   const [score, setScore] = useState(0)
+  const [answers, setAnswers] = useState([])
   const [expired, setExpired] = useState(false)
 
   const question = questions[currentIndex]
@@ -17,18 +18,20 @@ export default function Practice() {
 
   const { timeLeft, display } = useTimer(600, () => {
     setExpired(true)
-    navigate('/results', { state: { score, total, expired: true } })
+    navigate('/results', { state: { score, total, expired: true, answers } })
   })
 
   function handleSelect(index) {
     if (selected !== null || expired) return
     setSelected(index)
-    if (index === question.answer) setScore(s => s + 1)
+    const correct = index === question.answer
+    if (correct) setScore(s => s + 1)
+    setAnswers(a => [...a, { question, selected: index, correct }])
   }
 
   function handleNext() {
     if (isLast) {
-      navigate('/results', { state: { score, total, expired: false } })
+      navigate('/results', { state: { score, total, expired: false, answers } })
     } else {
       setCurrentIndex(i => i + 1)
       setSelected(null)
@@ -40,10 +43,8 @@ export default function Practice() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <p style={{ color: '#888', margin: 0 }}>Question {currentIndex + 1} / {total}</p>
         <p style={{
-          margin: 0,
-          fontWeight: 'bold',
+          margin: 0, fontWeight: 'bold', fontSize: 18,
           color: timeLeft <= 60 ? '#f44336' : '#333',
-          fontSize: 18,
         }}>
           ⏱ {display}
         </p>
@@ -53,9 +54,7 @@ export default function Practice() {
         <div style={{
           height: '100%',
           width: `${((currentIndex + 1) / total) * 100}%`,
-          background: '#4caf50',
-          borderRadius: 3,
-          transition: 'width 0.3s',
+          background: '#4caf50', borderRadius: 3, transition: 'width 0.3s',
         }} />
       </div>
 
@@ -68,17 +67,12 @@ export default function Practice() {
           else if (index === selected) bg = '#f44336'
         }
         return (
-          <button
-            key={index}
-            onClick={() => handleSelect(index)}
-            style={{
-              display: 'block', width: '100%',
-              padding: '12px 16px', marginBottom: 12,
-              background: bg, border: 'none', borderRadius: 8,
-              fontSize: 16, cursor: answered ? 'default' : 'pointer',
-              textAlign: 'left',
-            }}
-          >
+          <button key={index} onClick={() => handleSelect(index)} style={{
+            display: 'block', width: '100%',
+            padding: '12px 16px', marginBottom: 12,
+            background: bg, border: 'none', borderRadius: 8,
+            fontSize: 16, cursor: answered ? 'default' : 'pointer', textAlign: 'left',
+          }}>
             {option}
           </button>
         )
@@ -90,14 +84,11 @@ export default function Practice() {
             {selected === question.answer ? '✓ Correct!' : '✗ Incorrect'}
           </p>
           <p style={{ color: '#555', marginBottom: 16 }}>{question.explanation}</p>
-          <button
-            onClick={handleNext}
-            style={{
-              padding: '12px 32px', fontSize: 16,
-              background: '#333', color: '#fff',
-              border: 'none', borderRadius: 8, cursor: 'pointer',
-            }}
-          >
+          <button onClick={handleNext} style={{
+            padding: '12px 32px', fontSize: 16,
+            background: '#333', color: '#fff',
+            border: 'none', borderRadius: 8, cursor: 'pointer',
+          }}>
             {isLast ? 'See Results →' : 'Next →'}
           </button>
         </div>
