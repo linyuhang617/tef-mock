@@ -1,21 +1,46 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { questions } from '../../data/questions'
 
-const question = questions[0]
-
 export default function Practice() {
+  const navigate = useNavigate()
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [selected, setSelected] = useState(null)
+  const [score, setScore] = useState(0)
+
+  const question = questions[currentIndex]
+  const total = questions.length
+  const answered = selected !== null
+  const isLast = currentIndex === total - 1
 
   function handleSelect(index) {
     if (selected !== null) return
     setSelected(index)
+    if (index === question.answer) setScore(s => s + 1)
   }
 
-  const answered = selected !== null
-  const correct = selected === question.answer
+  function handleNext() {
+    if (isLast) {
+      navigate('/results', { state: { score, total } })
+    } else {
+      setCurrentIndex(i => i + 1)
+      setSelected(null)
+    }
+  }
 
   return (
     <div style={{ maxWidth: 600, margin: '60px auto', padding: '0 20px' }}>
+      <p style={{ color: '#888', marginBottom: 8 }}>Question {currentIndex + 1} / {total}</p>
+      <div style={{ height: 6, background: '#eee', borderRadius: 3, marginBottom: 24 }}>
+        <div style={{
+          height: '100%',
+          width: `${((currentIndex + 1) / total) * 100}%`,
+          background: '#4caf50',
+          borderRadius: 3,
+          transition: 'width 0.3s',
+        }} />
+      </div>
+
       <p style={{ fontSize: 18, marginBottom: 24 }}>{question.question}</p>
 
       {question.options.map((option, index) => {
@@ -24,21 +49,15 @@ export default function Practice() {
           if (index === question.answer) bg = '#4caf50'
           else if (index === selected) bg = '#f44336'
         }
-
         return (
           <button
             key={index}
             onClick={() => handleSelect(index)}
             style={{
-              display: 'block',
-              width: '100%',
-              padding: '12px 16px',
-              marginBottom: 12,
-              background: bg,
-              border: 'none',
-              borderRadius: 8,
-              fontSize: 16,
-              cursor: answered ? 'default' : 'pointer',
+              display: 'block', width: '100%',
+              padding: '12px 16px', marginBottom: 12,
+              background: bg, border: 'none', borderRadius: 8,
+              fontSize: 16, cursor: answered ? 'default' : 'pointer',
               textAlign: 'left',
             }}
           >
@@ -50,9 +69,19 @@ export default function Practice() {
       {answered && (
         <div style={{ marginTop: 16 }}>
           <p style={{ fontWeight: 'bold' }}>
-            {correct ? '✓ Correct!' : '✗ Incorrect'}
+            {selected === question.answer ? '✓ Correct!' : '✗ Incorrect'}
           </p>
-          <p style={{ color: '#555' }}>{question.explanation}</p>
+          <p style={{ color: '#555', marginBottom: 16 }}>{question.explanation}</p>
+          <button
+            onClick={handleNext}
+            style={{
+              padding: '12px 32px', fontSize: 16,
+              background: '#333', color: '#fff',
+              border: 'none', borderRadius: 8, cursor: 'pointer',
+            }}
+          >
+            {isLast ? 'See Results →' : 'Next →'}
+          </button>
         </div>
       )}
     </div>
